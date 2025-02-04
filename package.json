@@ -1,9 +1,20 @@
 {
   "name": "mcp-config-editor",
-  "private": true,
   "version": "0.1.0",
-  "description": "MCP Configuration Editor",
-  "author": "Ola Hungerford",
+  "description": "A desktop application for managing Model Context Protocol (MCP) server configurations",
+  "author": "Dandelion Gold, LLC",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "configuration",
+    "electron",
+    "react",
+    "typescript",
+    "desktop-app",
+    "json-editor",
+    "claude"
+  ],
   "scripts": {
     "dev": "vite & wait-on http://localhost:5173 && electron dist-electron/main.js",
     "build": "tsc && vite build && electron-builder",
