@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Plus, FileJson, FolderOpen } from 'lucide-react';
+import { Plus, FileJson, FolderOpen, BookOpen } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/ui/tooltip';
 import JsonImport from './mcp-config-json-import';
 import ServerCard from './mcp-config-server-card';
@@ -159,6 +159,20 @@ const MCPConfigEditor = () => {
                 <TooltipContent>Current MCP configuration file path</TooltipContent>
               </Tooltip>
             </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="shrink-0"
+                  onClick={() => window.open('https://modelcontextprotocol.io/quickstart/user', '_blank')}
+                >
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Quickstart Guide
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>View the MCP quickstart guide</TooltipContent>
+            </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
