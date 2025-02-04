@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Plus, FileJson, FolderOpen } from 'lucide-react';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/ui/tooltip';
 import JsonImport from './mcp-config-json-import';
 import ServerCard from './mcp-config-server-card';
 import SaveControls from './mcp-config-controls';
@@ -144,98 +145,125 @@ const MCPConfigEditor = () => {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader className="pb-0">
-        <div className="flex items-center justify-end gap-4">
-          <div className="flex-1 overflow-hidden">
-            <span className="text-sm text-gray-500 block truncate" title={configPath}>
-              {configPath}
-            </span>
+    <TooltipProvider>
+      <Card className="w-full max-w-4xl mx-auto">
+        <CardHeader className="pb-0">
+          <div className="flex items-center justify-end gap-4">
+            <div className="flex-1 overflow-hidden">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-sm text-gray-500 block truncate" title={configPath}>
+                    {configPath}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>Current MCP configuration file path</TooltipContent>
+              </Tooltip>
+            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="shrink-0"
+                  onClick={async () => {
+                    if (window.ipcRenderer) {
+                      const newPath = await window.ipcRenderer.invoke('select-config-file');
+                      if (newPath) {
+                        const newConfig = await window.ipcRenderer.invoke('get-config');
+                        setConfigPath(newPath);
+                        setConfig(newConfig);
+                        setLastWorkingConfig(null);
+                        setShowUndoAlert(false);
+                      }
+                    }
+                  }}
+                >
+                  <FolderOpen className="w-4 h-4 mr-2" />
+                  Select Config
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Choose a different MCP configuration file</TooltipContent>
+            </Tooltip>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="shrink-0"
-            onClick={async () => {
-              if (window.ipcRenderer) {
-                const newPath = await window.ipcRenderer.invoke('select-config-file');
-                if (newPath) {
-                  const newConfig = await window.ipcRenderer.invoke('get-config');
-                  setConfigPath(newPath);
-                  setConfig(newConfig);
-                  setLastWorkingConfig(null);
-                  setShowUndoAlert(false);
-                }
-              }
-            }}
-          >
-            <FolderOpen className="w-4 h-4 mr-2" />
-            Select Config
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-6">
-          {/* Add New Server Controls */}
-          <div className="flex gap-2 items-center">
-            <Input
-              placeholder="New server name"
-              value={newServerName}
-              onChange={(e) => setNewServerName(e.target.value)}
-              className="flex-1"
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="space-y-6">
+            {/* Add New Server Controls */}
+            <div className="flex gap-2 items-center">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Input
+                    placeholder="New server name"
+                    value={newServerName}
+                    onChange={(e) => setNewServerName(e.target.value)}
+                    className="flex-1"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>Enter a unique name for the new MCP server</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    onClick={addNewServer} 
+                    variant="outline"
+                    className="h-10"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Server
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Add a new MCP server to this configuration</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    onClick={() => setShowJsonInput(!showJsonInput)} 
+                    variant="outline"
+                    className="h-10"
+                  >
+                    <FileJson className="w-4 h-4 mr-2" />
+                    Import JSON
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Import server configurations from a JSON file</TooltipContent>
+              </Tooltip>
+            </div>
+
+            {/* JSON Import Section */}
+            {showJsonInput && (
+              <JsonImport
+                onImport={handleJsonImport}
+                onCancel={() => setShowJsonInput(false)}
+              />
+            )}
+
+            {/* Server List */}
+            <div className="space-y-4">
+              {Object.entries(config.mcpServers)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([serverName, serverConfig]) => (
+                <ErrorBoundary key={serverName}>
+                  <ServerCard
+                    serverName={serverName}
+                    serverConfig={serverConfig}
+                    onUpdate={handleServerUpdate}
+                    onRemove={handleServerRemove}
+                  />
+                </ErrorBoundary>
+              ))}
+            </div>
+
+            {/* Save Controls */}
+            <SaveControls
+              onSave={handleSave}
+              onUndo={handleUndo}
+              showUndoAlert={showUndoAlert}
+              hasBackup={!!lastWorkingConfig}
             />
-            <Button 
-              onClick={addNewServer} 
-              variant="outline"
-              className="h-10"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Server
-            </Button>
-            <Button 
-              onClick={() => setShowJsonInput(!showJsonInput)} 
-              variant="outline"
-              className="h-10"
-            >
-              <FileJson className="w-4 h-4 mr-2" />
-              Import JSON
-            </Button>
           </div>
-
-          {/* JSON Import Section */}
-          {showJsonInput && (
-            <JsonImport
-              onImport={handleJsonImport}
-              onCancel={() => setShowJsonInput(false)}
-            />
-          )}
-
-          {/* Server List */}
-          <div className="space-y-4">
-            {Object.entries(config.mcpServers)
-              .sort(([a], [b]) => a.localeCompare(b))
-              .map(([serverName, serverConfig]) => (
-              <ErrorBoundary key={serverName}>
-                <ServerCard
-                  serverName={serverName}
-                  serverConfig={serverConfig}
-                  onUpdate={handleServerUpdate}
-                  onRemove={handleServerRemove}
-                />
-              </ErrorBoundary>
-            ))}
-          </div>
-
-          {/* Save Controls */}
-          <SaveControls
-            onSave={handleSave}
-            onUndo={handleUndo}
-            showUndoAlert={showUndoAlert}
-            hasBackup={!!lastWorkingConfig}
-          />
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </TooltipProvider>
   );
 };
 
