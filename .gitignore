@@ -7,12 +7,25 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Build outputs
 dist
 dist-ssr
 dist-electron
+build
 release
 *.local
+*.cjs
+src/renderer/dist-electron/
+src/main/*.cjs
+src/main/*.js
+
+# Testing
+coverage
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +37,10 @@ release
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
