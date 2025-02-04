@@ -1,4 +1,4 @@
-# MCP Config Editor
+# MCP (Model Context Protocol) Configuration Editor
 
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -25,6 +25,20 @@ We welcome contributions to help build and test installers for:
 
 If you'd like to help with platform support, please check our [Contributing Guide](CONTRIBUTING.md).
 
+## Getting Started
+
+Please see [this link](https://modelcontextprotocol.io/quickstart/user) first, if you're using Claude Desktop and this is your first time setting up a MCP server configuration file.
+
+## Development
+
+This project uses:
+- [Electron](https://www.electronjs.org/) for the desktop application
+- [React](https://reactjs.org/) for the UI framework
+- [TypeScript](https://www.typescriptlang.org/) for type safety
+- [Vite](https://vitejs.dev/) for build tooling
+- [Radix UI](https://www.radix-ui.com/) for UI components
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+
 ### Development Setup
 ```bash
 # Clone the repository
@@ -39,24 +53,6 @@ npm install
 # Start the development server
 npm run dev
 ```
-
-## Usage
-
-1. Launch the application
-2. Add or edit MCP server configurations
-3. Set environment variables for your servers
-4. Save and manage your configurations
-5. Import/Export configurations as needed
-
-## Development
-
-This project uses:
-- [Electron](https://www.electronjs.org/) for the desktop application
-- [React](https://reactjs.org/) for the UI framework
-- [TypeScript](https://www.typescriptlang.org/) for type safety
-- [Vite](https://vitejs.dev/) for build tooling
-- [Radix UI](https://www.radix-ui.com/) for UI components
-- [Tailwind CSS](https://tailwindcss.com/) for styling
 
 ## Contributing
 
