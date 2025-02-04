@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Plus, FileJson, FolderOpen, BookOpen } from 'lucide-react';
+import { Plus, FileJson, FolderOpen, BookOpen, Download } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/ui/tooltip';
 import JsonImport from './mcp-config-json-import';
 import ServerCard from './mcp-config-server-card';
@@ -240,6 +240,26 @@ const MCPConfigEditor = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Import server configurations from a JSON file</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={async () => {
+                      if (window.ipcRenderer) {
+                        const success = await window.ipcRenderer.invoke('export-config', config);
+                        if (!success) {
+                          console.error('Failed to export config');
+                        }
+                      }
+                    }}
+                    variant="outline"
+                    className="h-10"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Config
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Export current configuration to a JSON file</TooltipContent>
               </Tooltip>
             </div>
 

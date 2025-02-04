@@ -123,6 +123,35 @@ function setupIPC() {
 
   ipcMain.handle('get-config-path', () => currentConfigPath);
 
+  ipcMain.handle('export-config', async (_, config: MCPConfig) => {
+    try {
+      const { dialog } = require('electron');
+      const downloadsPath = app.getPath('downloads');
+      const defaultPath = path.join(downloadsPath, 'mcp-config.json');
+      
+      const result = await dialog.showSaveDialog({
+        title: 'Export MCP Configuration',
+        defaultPath,
+        filters: [{ name: 'JSON', extensions: ['json'] }],
+        properties: ['createDirectory', 'showOverwriteConfirmation']
+      });
+
+      if (!result.canceled && result.filePath) {
+        try {
+          await fs.writeFile(result.filePath, JSON.stringify(config, null, 2), 'utf-8');
+          return true;
+        } catch (error) {
+          console.error('Error writing config file:', error);
+          return false;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error('Error in export dialog:', error);
+      return false;
+    }
+  });
+
   ipcMain.handle('select-config-file', async () => {
     const { dialog } = require('electron');
     const result = await dialog.showOpenDialog({

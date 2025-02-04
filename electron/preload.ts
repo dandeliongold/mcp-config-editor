@@ -6,6 +6,7 @@ interface IpcApi {
   invoke(channel: 'save-config', config: any): Promise<boolean>;
   invoke(channel: 'get-config-path'): Promise<string>;
   invoke(channel: 'select-config-file'): Promise<string | null>;
+  invoke(channel: 'export-config', config: any): Promise<boolean>;
   invoke(channel: string, ...args: any[]): Promise<any>;
   on(channel: string, func: (...args: any[]) => void): void;
   off(channel: string, func: (...args: any[]) => void): void;
@@ -16,7 +17,7 @@ contextBridge.exposeInMainWorld(
   'ipcRenderer',
   {
     invoke: async (channel: string, ...args: any[]) => {
-      const validChannels = ['get-config', 'save-config', 'get-config-path', 'select-config-file'];
+      const validChannels = ['get-config', 'save-config', 'get-config-path', 'select-config-file', 'export-config'];
       if (validChannels.includes(channel)) {
         return await ipcRenderer.invoke(channel, ...args);
       }
