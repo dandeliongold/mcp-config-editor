@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A desktop application for managing Model Context Protocol (MCP) server configurations. This tool provides a user-friendly interface for editing and managing MCP server settings, making it easier to work with AI models that support the Model Context Protocol.
+A desktop application for managing Model Context Protocol (a.k.a. MCP) server configurations. This tool provides a user-friendly interface for editing and managing MCP server settings, making it easier to work with AI apps like Claude Desktop that support the Model Context Protocol.
 
 ![MCP Config Editor Screenshot](docs/assets/screenshots/mcp_config_editor_screenshot.PNG)
 
