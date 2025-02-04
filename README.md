@@ -15,6 +15,17 @@ A desktop application for managing Model Context Protocol (MCP) server configura
 
 ## Installation
 
+### Windows
+Download the latest `MCP Config Editor-Windows-[version]-Setup.exe` from the [Releases](../../releases) page and run the installer.
+
+### Other Platforms
+We welcome contributions to help build and test installers for:
+- macOS (.dmg)
+- Linux (.AppImage)
+
+If you'd like to help with platform support, please check our [Contributing Guide](CONTRIBUTING.md).
+
+### Development Setup
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/mcp-config-editor.git

@@ -12,12 +12,43 @@ We love your input! We want to make contributing to MCP Config Editor as easy an
 
 We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
 
+### Platform Support
+
+We currently need help with building and testing installers for:
+- macOS (.dmg installer)
+- Linux (.AppImage)
+
+To help with platform support:
+1. Set up a development environment on the target platform
+2. Test the build process using `npm run build`
+3. Test the generated installer
+4. Document any platform-specific requirements or issues
+5. Submit a PR with your findings and any necessary changes
+
 1. Fork the repo and create your branch from `main`
 2. If you've added code that should be tested, add tests
 3. If you've changed APIs, update the documentation
 4. Ensure the test suite passes
 5. Make sure your code lints
 6. Issue that pull request!
+
+## Build Process
+
+The application can be built for different platforms:
+```bash
+# Install dependencies
+npm install
+
+# Build installers
+npm run build
+```
+
+This will create platform-specific installers in the `release/[version]` directory:
+- Windows: `MCP Config Editor-Windows-[version]-Setup.exe`
+- macOS: `MCP Config Editor-Mac-[version]-Installer.dmg`
+- Linux: `MCP Config Editor-Linux-[version].AppImage`
+
+Note: Each platform's installer can only be built on that platform (e.g., .dmg installers must be built on macOS).
 
 ## Local Development Setup
 
