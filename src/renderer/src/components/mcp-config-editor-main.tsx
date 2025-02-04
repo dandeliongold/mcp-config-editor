@@ -53,8 +53,15 @@ const MCPConfigEditor = () => {
     loadConfig();
   }, []);
 
+  const storeBackup = () => {
+    const backup = JSON.parse(JSON.stringify(config));
+    console.log('Storing backup:', backup);
+    setLastWorkingConfig(backup);
+  };
+
   const addNewServer = () => {
     if (newServerName && !config.mcpServers[newServerName]) {
+      storeBackup();
       setConfig(prev => ({
         ...prev,
         mcpServers: {
@@ -71,6 +78,7 @@ const MCPConfigEditor = () => {
   };
 
   const handleServerUpdate = (serverName: string, newServerConfig: ServerConfig) => {
+    storeBackup();
     setConfig(prev => ({
       ...prev,
       mcpServers: {
@@ -81,6 +89,7 @@ const MCPConfigEditor = () => {
   };
 
   const handleServerRemove = (serverName: string) => {
+    storeBackup();
     setConfig(prev => {
       const newConfig = { ...prev };
       const newServers = { ...prev.mcpServers };
@@ -91,6 +100,7 @@ const MCPConfigEditor = () => {
   };
 
   const handleJsonImport = (importedConfig: MCPConfig) => {
+    storeBackup();
     setConfig(prev => ({
       ...prev,
       mcpServers: {
@@ -108,7 +118,6 @@ const MCPConfigEditor = () => {
       } else {
         console.log('Development mode: Config would be saved as:', config);
       }
-      setLastWorkingConfig(JSON.parse(JSON.stringify(config)));
       setShowUndoAlert(true);
     } catch (error) {
       console.error('Failed to save config:', error);
@@ -117,7 +126,9 @@ const MCPConfigEditor = () => {
 
   const handleUndo = () => {
     if (lastWorkingConfig) {
-      setConfig(lastWorkingConfig);
+      console.log('Restoring to backup config:', lastWorkingConfig);
+      // Create a new object to ensure state update
+      setConfig(JSON.parse(JSON.stringify(lastWorkingConfig)));
       setLastWorkingConfig(null);
       setShowUndoAlert(false);
     }
@@ -166,7 +177,9 @@ const MCPConfigEditor = () => {
 
           {/* Server List */}
           <div className="space-y-4">
-            {Object.entries(config.mcpServers).map(([serverName, serverConfig]) => (
+            {Object.entries(config.mcpServers)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([serverName, serverConfig]) => (
               <ErrorBoundary key={serverName}>
                 <ServerCard
                   serverName={serverName}
