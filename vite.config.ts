@@ -13,11 +13,12 @@ export default defineConfig({
     electron([
       {
         // Main-Process entry file of the Electron App.
-        entry: path.resolve(__dirname, 'src/main/index.js'),
+        entry: path.resolve(__dirname, 'electron/main.ts'),
         vite: {
           build: {
-            outDir: 'dist-electron',
+            outDir: '../../dist-electron',
             rollupOptions: {
+              external: ['electron'],
               output: {
                 format: 'cjs'
               }
@@ -26,14 +27,15 @@ export default defineConfig({
         }
       },
       {
-        entry: path.resolve(__dirname, 'src/main/preload.js'),
+        entry: path.resolve(__dirname, 'electron/preload.ts'),
         onstart(options) {
           options.reload()
         },
         vite: {
           build: {
-            outDir: 'dist-electron',
+            outDir: '../../dist-electron',
             rollupOptions: {
+              external: ['electron'],
               output: {
                 format: 'cjs'
               }
@@ -54,5 +56,5 @@ export default defineConfig({
   build: {
     outDir: '../../dist',
     emptyOutDir: true,
-  },
+  }
 })

@@ -2,8 +2,10 @@
   "name": "mcp-config-editor",
   "private": true,
   "version": "0.0.0",
+  "description": "MCP Configuration Editor",
+  "author": "olaservo",
   "scripts": {
-    "dev": "vite & wait-on http://localhost:5173 && electron .",
+    "dev": "vite & wait-on http://localhost:5173 && electron dist-electron/main.js",
     "build": "tsc && vite build && electron-builder",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
@@ -44,5 +46,5 @@
     "vite-plugin-electron-renderer": "^0.14.5",
     "wait-on": "^8.0.2"
   },
-  "main": "dist-electron/index.js"
+  "main": "dist-electron/main.js"
 }
