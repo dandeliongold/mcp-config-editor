@@ -15,9 +15,18 @@ interface MCPConfig {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CLAUDE_CONFIG_PATH = path.join(app.getPath('appData'), 'Claude', 'claude_desktop_config.json');
-const DEFAULT_CONFIG_PATH = CLAUDE_CONFIG_PATH; // Default to Claude config
-let currentConfigPath = CLAUDE_CONFIG_PATH;
+const getDefaultConfigPath = () => {
+  if (process.platform === 'darwin') {
+    // macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
+    return path.join(app.getPath('home'), 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json');
+  } else {
+    // Windows: %APPDATA%\Claude\claude_desktop_config.json
+    return path.join(app.getPath('appData'), 'Claude', 'claude_desktop_config.json');
+  }
+};
+
+const DEFAULT_CONFIG_PATH = getDefaultConfigPath();
+let currentConfigPath = DEFAULT_CONFIG_PATH;
 
 // Load last used config path
 async function loadLastConfigPath(): Promise<string> {
@@ -25,9 +34,9 @@ async function loadLastConfigPath(): Promise<string> {
     const settingsPath = path.join(app.getPath('userData'), 'settings.json');
     const data = await fs.readFile(settingsPath, 'utf-8');
     const settings = JSON.parse(data);
-    return settings.lastConfigPath || CLAUDE_CONFIG_PATH;
+    return settings.lastConfigPath || DEFAULT_CONFIG_PATH;
   } catch {
-    return CLAUDE_CONFIG_PATH;
+    return DEFAULT_CONFIG_PATH;
   }
 }
 
