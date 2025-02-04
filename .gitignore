@@ -19,10 +19,7 @@ dist-electron
 build
 release
 *.local
-*.cjs
 src/renderer/dist-electron/
-src/main/*.cjs
-src/main/*.js
 
 # Testing
 coverage
