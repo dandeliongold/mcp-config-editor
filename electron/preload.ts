@@ -4,6 +4,8 @@ import { ipcRenderer, contextBridge } from 'electron';
 interface IpcApi {
   invoke(channel: 'get-config'): Promise<any>;
   invoke(channel: 'save-config', config: any): Promise<boolean>;
+  invoke(channel: 'get-config-path'): Promise<string>;
+  invoke(channel: 'select-config-file'): Promise<string | null>;
   invoke(channel: string, ...args: any[]): Promise<any>;
   on(channel: string, func: (...args: any[]) => void): void;
   off(channel: string, func: (...args: any[]) => void): void;
@@ -14,7 +16,7 @@ contextBridge.exposeInMainWorld(
   'ipcRenderer',
   {
     invoke: async (channel: string, ...args: any[]) => {
-      const validChannels = ['get-config', 'save-config'];
+      const validChannels = ['get-config', 'save-config', 'get-config-path', 'select-config-file'];
       if (validChannels.includes(channel)) {
         return await ipcRenderer.invoke(channel, ...args);
       }

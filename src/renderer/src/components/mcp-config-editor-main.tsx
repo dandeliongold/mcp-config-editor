@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Plus, FileJson } from 'lucide-react';
+import { Plus, FileJson, FolderOpen } from 'lucide-react';
 import JsonImport from './mcp-config-json-import';
 import ServerCard from './mcp-config-server-card';
 import SaveControls from './mcp-config-controls';
@@ -26,13 +26,22 @@ const MCPConfigEditor = () => {
   const [showJsonInput, setShowJsonInput] = useState(false);
   const [lastWorkingConfig, setLastWorkingConfig] = useState<MCPConfig | null>(null);
   const [showUndoAlert, setShowUndoAlert] = useState(false);
+  const [configPath, setConfigPath] = useState<string>('');
 
   useEffect(() => {
-    const loadConfig = async () => {
+    const loadInitialState = async () => {
       try {
         if (window.ipcRenderer) {
+          console.log('Loading initial state...');
+          const currentPath = await window.ipcRenderer.invoke('get-config-path');
+          console.log('Current config path:', currentPath);
+          setConfigPath(currentPath);
+          
           const loadedConfig = await window.ipcRenderer.invoke('get-config');
-          setConfig(loadedConfig);
+          console.log('Loaded config:', loadedConfig);
+          if (loadedConfig && loadedConfig.mcpServers) {
+            setConfig(loadedConfig);
+          }
         } else {
           console.log('Running in development mode without Electron');
           setConfig({
@@ -50,7 +59,7 @@ const MCPConfigEditor = () => {
       }
     };
 
-    loadConfig();
+    loadInitialState();
   }, []);
 
   const storeBackup = () => {
@@ -137,7 +146,33 @@ const MCPConfigEditor = () => {
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader className="pb-0">
-        <CardTitle className="text-xl font-medium">MCP Server Configuration</CardTitle>
+        <div className="flex items-center justify-end gap-4">
+          <div className="flex-1 overflow-hidden">
+            <span className="text-sm text-gray-500 block truncate" title={configPath}>
+              {configPath}
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0"
+            onClick={async () => {
+              if (window.ipcRenderer) {
+                const newPath = await window.ipcRenderer.invoke('select-config-file');
+                if (newPath) {
+                  const newConfig = await window.ipcRenderer.invoke('get-config');
+                  setConfigPath(newPath);
+                  setConfig(newConfig);
+                  setLastWorkingConfig(null);
+                  setShowUndoAlert(false);
+                }
+              }
+            }}
+          >
+            <FolderOpen className="w-4 h-4 mr-2" />
+            Select Config
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="pt-6">
         <div className="space-y-6">
