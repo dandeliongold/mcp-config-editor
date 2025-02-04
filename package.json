@@ -1,9 +1,9 @@
 {
   "name": "mcp-config-editor",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "MCP Configuration Editor",
-  "author": "olaservo",
+  "author": "Ola Hungerford",
   "scripts": {
     "dev": "vite & wait-on http://localhost:5173 && electron dist-electron/main.js",
     "build": "tsc && vite build && electron-builder",
