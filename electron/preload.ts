@@ -24,13 +24,13 @@ contextBridge.exposeInMainWorld(
       throw new Error(`Invalid IPC channel: ${channel}`);
     },
     on: (channel: string, func: (...args: any[]) => void) => {
-      const validChannels = ['main-process-message'];
+      const validChannels = ['main-process-message', 'menu-export-config', 'menu-save-config'];
       if (validChannels.includes(channel)) {
         ipcRenderer.on(channel, (_event, ...args) => func(...args));
       }
     },
     off: (channel: string, func: (...args: any[]) => void) => {
-      const validChannels = ['main-process-message'];
+      const validChannels = ['main-process-message', 'menu-export-config', 'menu-save-config'];
       if (validChannels.includes(channel)) {
         ipcRenderer.off(channel, func);
       }

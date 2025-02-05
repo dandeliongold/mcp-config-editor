@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardHeader, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -28,6 +28,31 @@ const MCPConfigEditor = () => {
   const [lastWorkingConfig, setLastWorkingConfig] = useState<MCPConfig | null>(null);
   const [showUndoAlert, setShowUndoAlert] = useState(false);
   const [configPath, setConfigPath] = useState<string>('');
+
+  const handleSave = useCallback(async () => {
+    try {
+      if (window.ipcRenderer) {
+        await window.ipcRenderer.invoke('save-config', config);
+      } else {
+        console.log('Development mode: Config would be saved as:', config);
+      }
+      setShowUndoAlert(true);
+    } catch (error) {
+      console.error('Failed to save config:', error);
+    }
+  }, [config]);
+
+  // Store menu handlers in a ref to maintain stable reference
+  const menuHandlersRef = useRef({
+    save: handleSave
+  });
+
+  // Update ref when handler changes
+  useEffect(() => {
+    menuHandlersRef.current = {
+      save: handleSave
+    };
+  }, [handleSave]);
 
   useEffect(() => {
     const loadInitialState = async () => {
@@ -61,7 +86,18 @@ const MCPConfigEditor = () => {
     };
 
     loadInitialState();
-  }, []);
+
+    // Set up menu action listeners with stable references
+    if (window.ipcRenderer) {
+      const saveHandler = () => menuHandlersRef.current.save();
+      window.ipcRenderer.on('menu-save-config', saveHandler);
+
+      // Cleanup listener on unmount
+      return () => {
+        window.ipcRenderer.off('menu-save-config', saveHandler);
+      };
+    }
+  }, []); // No dependencies needed as we use ref for handlers
 
   const storeBackup = () => {
     const backup = JSON.parse(JSON.stringify(config));
@@ -119,19 +155,6 @@ const MCPConfigEditor = () => {
       }
     }));
     setShowJsonInput(false);
-  };
-
-  const handleSave = async () => {
-    try {
-      if (window.ipcRenderer) {
-        await window.ipcRenderer.invoke('save-config', config);
-      } else {
-        console.log('Development mode: Config would be saved as:', config);
-      }
-      setShowUndoAlert(true);
-    } catch (error) {
-      console.error('Failed to save config:', error);
-    }
   };
 
   const handleUndo = () => {
@@ -244,12 +267,9 @@ const MCPConfigEditor = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={async () => {
+                    onClick={() => {
                       if (window.ipcRenderer) {
-                        const success = await window.ipcRenderer.invoke('export-config', config);
-                        if (!success) {
-                          console.error('Failed to export config');
-                        }
+                        window.ipcRenderer.invoke('export-config', config);
                       }
                     }}
                     variant="outline"

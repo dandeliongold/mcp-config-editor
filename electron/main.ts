@@ -239,8 +239,26 @@ function createApplicationMenu() {
         },
         {
           label: 'Export',
-          click: () => {
-            mainWindow?.webContents.send('menu-export-config');
+          click: async () => {
+            if (!mainWindow) return;
+            try {
+              const config = await readConfig(currentConfigPath);
+              const downloadsPath = app.getPath('downloads');
+              const defaultPath = path.join(downloadsPath, 'mcp-config.json');
+              
+              const saveResult = await dialog.showSaveDialog(mainWindow, {
+                title: 'Export MCP Configuration',
+                defaultPath,
+                filters: [{ name: 'JSON', extensions: ['json'] }],
+                properties: ['createDirectory', 'showOverwriteConfirmation']
+              }) as unknown as SaveDialogReturnValue;
+
+              if (!saveResult.canceled && saveResult.filePath) {
+                await fs.writeFile(saveResult.filePath, JSON.stringify(config, null, 2), 'utf-8');
+              }
+            } catch (error) {
+              console.error('Error in export:', error);
+            }
           }
         },
         { type: 'separator' },
