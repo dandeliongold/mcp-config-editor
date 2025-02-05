@@ -1,4 +1,5 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, dialog, MenuItemConstructorOptions, shell } from 'electron';
+import type { SaveDialogReturnValue, OpenDialogReturnValue } from 'electron';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import * as fs from 'fs/promises';
@@ -125,20 +126,21 @@ function setupIPC() {
 
   ipcMain.handle('export-config', async (_, config: MCPConfig) => {
     try {
-      const { dialog } = require('electron');
       const downloadsPath = app.getPath('downloads');
       const defaultPath = path.join(downloadsPath, 'mcp-config.json');
       
-      const result = await dialog.showSaveDialog({
+      if (!mainWindow) return false;
+
+      const saveResult = await dialog.showSaveDialog(mainWindow, {
         title: 'Export MCP Configuration',
         defaultPath,
         filters: [{ name: 'JSON', extensions: ['json'] }],
         properties: ['createDirectory', 'showOverwriteConfirmation']
-      });
+      }) as unknown as SaveDialogReturnValue;
 
-      if (!result.canceled && result.filePath) {
+      if (!saveResult.canceled && saveResult.filePath) {
         try {
-          await fs.writeFile(result.filePath, JSON.stringify(config, null, 2), 'utf-8');
+          await fs.writeFile(saveResult.filePath, JSON.stringify(config, null, 2), 'utf-8');
           return true;
         } catch (error) {
           console.error('Error writing config file:', error);
@@ -153,15 +155,16 @@ function setupIPC() {
   });
 
   ipcMain.handle('select-config-file', async () => {
-    const { dialog } = require('electron');
-    const result = await dialog.showOpenDialog({
+    if (!mainWindow) return null;
+
+    const openResult = await dialog.showOpenDialog(mainWindow, {
       properties: ['openFile', 'createDirectory'],
       filters: [{ name: 'JSON', extensions: ['json'] }],
       defaultPath: currentConfigPath
-    });
+    }) as unknown as OpenDialogReturnValue;
 
-    if (!result.canceled && result.filePaths.length > 0) {
-      const newPath = result.filePaths[0];
+    if (!openResult.canceled && openResult.filePaths.length > 0) {
+      const newPath = openResult.filePaths[0];
       currentConfigPath = newPath;
       await saveLastConfigPath(newPath);
       return newPath;
@@ -203,10 +206,93 @@ async function createWindow() {
   });
 }
 
+function createApplicationMenu() {
+  const isMac = process.platform === 'darwin';
+  const template: MenuItemConstructorOptions[] = [
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Open Config File',
+          click: async () => {
+            if (!mainWindow) return;
+
+            const openResult = await dialog.showOpenDialog(mainWindow, {
+              properties: ['openFile'],
+              filters: [{ name: 'JSON', extensions: ['json'] }],
+              defaultPath: currentConfigPath
+            }) as unknown as OpenDialogReturnValue;
+
+            if (!openResult.canceled && openResult.filePaths.length > 0) {
+              const newPath = openResult.filePaths[0];
+              currentConfigPath = newPath;
+              await saveLastConfigPath(newPath);
+              mainWindow?.webContents.send('config-path-changed', newPath);
+            }
+          }
+        },
+        {
+          label: 'Save',
+          click: () => {
+            mainWindow?.webContents.send('menu-save-config');
+          }
+        },
+        {
+          label: 'Export',
+          click: () => {
+            mainWindow?.webContents.send('menu-export-config');
+          }
+        },
+        { type: 'separator' },
+        isMac ? { role: 'close' } : { role: 'quit' }
+      ]
+    },
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { type: 'separator' },
+        { role: 'toggleDevTools' }
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'Report Issue',
+          click: async () => {
+            await shell.openExternal('https://github.com/dandeliongold/mcp-config-editor/issues/new/choose');
+          }
+        },
+        {
+          label: 'About',
+          click: async () => {
+            if (!mainWindow) return;
+            const version = app.getVersion();
+            await dialog.showMessageBox(mainWindow, {
+              type: 'info',
+              title: 'About MCP Config Editor',
+              message: 'MCP Config Editor',
+              detail: `Version ${version}\n\nA desktop application for managing Model Context Protocol (MCP) server configurations.`,
+              buttons: ['OK'],
+              noLink: true
+            });
+          }
+        }
+      ]
+    }
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
 app.on('ready', async () => {
   currentConfigPath = await loadLastConfigPath();
   setupIPC();
   await createWindow();
+  createApplicationMenu();
 });
 
 app.on('window-all-closed', () => {
