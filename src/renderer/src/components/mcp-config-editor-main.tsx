@@ -173,14 +173,20 @@ const MCPConfigEditor = () => {
         <CardHeader className="pb-0">
           <div className="flex items-center justify-end gap-4">
             <div className="flex-1 overflow-hidden">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="text-sm text-gray-500 block truncate" title={configPath}>
-                    {configPath}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>Current MCP configuration file path</TooltipContent>
-              </Tooltip>
+              {configPath ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="text-sm text-gray-500 block truncate" title={configPath}>
+                      {configPath}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>Current MCP configuration file path</TooltipContent>
+                </Tooltip>
+              ) : (
+                <span className="text-sm text-gray-500 block">
+                  No config file found. Check the quickstart guide to get started →
+                </span>
+              )}
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -226,7 +232,7 @@ const MCPConfigEditor = () => {
         <CardContent className="pt-6">
           <div className="space-y-6">
             {/* Add New Server Controls */}
-            <div className="flex gap-2 items-center">
+            {configPath && <div className="flex gap-2 items-center">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Input
@@ -281,7 +287,7 @@ const MCPConfigEditor = () => {
                 </TooltipTrigger>
                 <TooltipContent>Export current configuration to a JSON file</TooltipContent>
               </Tooltip>
-            </div>
+            </div>}
 
             {/* JSON Import Section */}
             {showJsonInput && (
@@ -293,7 +299,11 @@ const MCPConfigEditor = () => {
 
             {/* Server List */}
             <div className="space-y-4">
-              {config.mcpServers && Object.keys(config.mcpServers).length > 0 ? (
+              {!configPath ? (
+                <div className="text-center py-8 text-gray-500">
+                  Check the quickstart guide to learn how to set up your MCP configuration file.
+                </div>
+              ) : Object.keys(config.mcpServers).length > 0 ? (
                 Object.entries(config.mcpServers)
                   .sort(([a], [b]) => a.localeCompare(b))
                   .map(([serverName, serverConfig]) => (
@@ -314,12 +324,14 @@ const MCPConfigEditor = () => {
             </div>
 
             {/* Save Controls */}
-            <SaveControls
-              onSave={handleSave}
-              onUndo={handleUndo}
-              showUndoAlert={showUndoAlert}
-              hasBackup={!!lastWorkingConfig}
-            />
+            {configPath && (
+              <SaveControls
+                onSave={handleSave}
+                onUndo={handleUndo}
+                showUndoAlert={showUndoAlert}
+                hasBackup={!!lastWorkingConfig}
+              />
+            )}
           </div>
         </CardContent>
       </Card>

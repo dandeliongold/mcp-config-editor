@@ -122,7 +122,14 @@ function setupIPC() {
     }
   });
 
-  ipcMain.handle('get-config-path', () => currentConfigPath);
+  ipcMain.handle('get-config-path', async () => {
+    try {
+      await fs.access(currentConfigPath);
+      return currentConfigPath;
+    } catch {
+      return '';
+    }
+  });
 
   ipcMain.handle('export-config', async (_, config: MCPConfig) => {
     try {
