@@ -239,7 +239,7 @@ const MCPConfigEditor = () => {
                     Import JSON
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Import server configurations from a JSON file</TooltipContent>
+                <TooltipContent>Import server configurations from JSON.</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>

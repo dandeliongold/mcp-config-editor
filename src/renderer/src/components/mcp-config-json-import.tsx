@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter } from '../components/ui/alert-dialog';
+import { Alert, AlertDescription } from '../components/ui/alert';
 
 interface JsonImportProps {
   onImport: (config: any) => void;
@@ -40,17 +40,14 @@ const JsonImport: React.FC<JsonImportProps> = ({ onImport, onCancel }) => {
         </div>
         
         {error && (
-          <AlertDialog open={!!error}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-red-600">Invalid Configuration</AlertDialogTitle>
-                <AlertDialogDescription className="text-gray-600">{error}</AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <Button onClick={() => setError(null)} className="h-10">OK</Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Alert variant="destructive">
+            <AlertDescription className="text-sm">
+              {error}
+              <Button variant="link" onClick={() => setError(null)} className="ml-2 h-auto p-0">
+                Dismiss
+              </Button>
+            </AlertDescription>
+          </Alert>
         )}
         
         <div className="flex justify-end gap-2">
