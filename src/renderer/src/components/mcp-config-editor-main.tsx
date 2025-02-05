@@ -273,18 +273,24 @@ const MCPConfigEditor = () => {
 
             {/* Server List */}
             <div className="space-y-4">
-              {Object.entries(config.mcpServers)
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([serverName, serverConfig]) => (
-                <ErrorBoundary key={serverName}>
-                  <ServerCard
-                    serverName={serverName}
-                    serverConfig={serverConfig}
-                    onUpdate={handleServerUpdate}
-                    onRemove={handleServerRemove}
-                  />
-                </ErrorBoundary>
-              ))}
+              {config.mcpServers && Object.keys(config.mcpServers).length > 0 ? (
+                Object.entries(config.mcpServers)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([serverName, serverConfig]) => (
+                  <ErrorBoundary key={serverName}>
+                    <ServerCard
+                      serverName={serverName}
+                      serverConfig={serverConfig}
+                      onUpdate={handleServerUpdate}
+                      onRemove={handleServerRemove}
+                    />
+                  </ErrorBoundary>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  Add a server to get started, either by adding settings manually, or by clicking the Import JSON button and pasting the configuration JSON code.
+                </div>
+              )}
             </div>
 
             {/* Save Controls */}

@@ -32,7 +32,7 @@ const JsonImport: React.FC<JsonImportProps> = ({ onImport, onCancel }) => {
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-gray-900">Add servers using JSON:</h3>
           <Textarea
-            placeholder="Paste {'mcpServers': {}} configuration JSON code here and it will be merged into the existing list of servers below."
+            placeholder="Paste {'mcpServers': {}} configuration JSON code here and it will be added to any existing configuration."
             value={jsonInput}
             onChange={(e) => setJsonInput(e.target.value)}
             className="font-mono text-sm min-h-[200px] resize-none"
