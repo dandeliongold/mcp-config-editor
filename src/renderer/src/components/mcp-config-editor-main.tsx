@@ -26,8 +26,6 @@ const MCPConfigEditor = () => {
   });
   const [newServerName, setNewServerName] = useState('');
   const [showJsonInput, setShowJsonInput] = useState(false);
-  const [lastWorkingConfig, setLastWorkingConfig] = useState<MCPConfig | null>(null);
-  const [showUndoAlert, setShowUndoAlert] = useState(false);
   const [configPath, setConfigPath] = useState<string>('');
   const [duplicateServersDialog, setDuplicateServersDialog] = useState<{
     show: boolean;
@@ -44,7 +42,6 @@ const MCPConfigEditor = () => {
       } else {
         console.log('Development mode: Config would be saved as:', config);
       }
-      setShowUndoAlert(true);
     } catch (error) {
       console.error('Failed to save config:', error);
     }
@@ -66,9 +63,7 @@ const MCPConfigEditor = () => {
   useEffect(() => {
     (window as any)._mcpConfigEditor = {
       setConfigPath,
-      setConfig,
-      setLastWorkingConfig,
-      setShowUndoAlert
+      setConfig
     };
   }, []);
 
@@ -118,12 +113,6 @@ const MCPConfigEditor = () => {
     }
   }, []); // No dependencies needed
 
-  const storeBackup = () => {
-    const backup = JSON.parse(JSON.stringify(config));
-    console.log('Storing backup:', backup);
-    setLastWorkingConfig(backup);
-  };
-
   const addNewServer = () => {
     if (!newServerName) return;
     
@@ -136,7 +125,6 @@ const MCPConfigEditor = () => {
       return;
     }
 
-    storeBackup();
     setConfig(prev => ({
       ...prev,
       mcpServers: {
@@ -152,7 +140,6 @@ const MCPConfigEditor = () => {
   };
 
   const handleServerUpdate = (serverName: string, newServerConfig: ServerConfig) => {
-    storeBackup();
     setConfig(prev => ({
       ...prev,
       mcpServers: {
@@ -163,7 +150,6 @@ const MCPConfigEditor = () => {
   };
 
   const handleServerRemove = (serverName: string) => {
-    storeBackup();
     setConfig(prev => {
       const newConfig = { ...prev };
       const newServers = { ...prev.mcpServers };
@@ -186,7 +172,6 @@ const MCPConfigEditor = () => {
       return;
     }
 
-    storeBackup();
     setConfig(prev => ({
       ...prev,
       mcpServers: {
@@ -195,16 +180,6 @@ const MCPConfigEditor = () => {
       }
     }));
     setShowJsonInput(false);
-  };
-
-  const handleUndo = () => {
-    if (lastWorkingConfig) {
-      console.log('Restoring to backup config:', lastWorkingConfig);
-      // Create a new object to ensure state update
-      setConfig(JSON.parse(JSON.stringify(lastWorkingConfig)));
-      setLastWorkingConfig(null);
-      setShowUndoAlert(false);
-    }
   };
 
   return (
@@ -258,8 +233,6 @@ const MCPConfigEditor = () => {
                           setConfig({
                             mcpServers: newConfig?.mcpServers || {}
                           });
-                          setLastWorkingConfig(null);
-                          setShowUndoAlert(false);
                         }
                       }
                     }
@@ -404,9 +377,6 @@ const MCPConfigEditor = () => {
             {configPath && (
               <SaveControls
                 onSave={handleSave}
-                onUndo={handleUndo}
-                showUndoAlert={showUndoAlert}
-                hasBackup={!!lastWorkingConfig}
               />
             )}
           </div>
