@@ -54,6 +54,16 @@ const MCPConfigEditor = () => {
     };
   }, [handleSave]);
 
+  // Expose state setters to window for menu actions
+  useEffect(() => {
+    (window as any)._mcpConfigEditor = {
+      setConfigPath,
+      setConfig,
+      setLastWorkingConfig,
+      setShowUndoAlert
+    };
+  }, []);
+
   useEffect(() => {
     const loadInitialState = async () => {
       try {
@@ -65,9 +75,10 @@ const MCPConfigEditor = () => {
           
           const loadedConfig = await window.ipcRenderer.invoke('get-config');
           console.log('Loaded config:', loadedConfig);
-          if (loadedConfig && loadedConfig.mcpServers) {
-            setConfig(loadedConfig);
-          }
+          // Ensure empty configs are handled consistently
+          setConfig({
+            mcpServers: loadedConfig?.mcpServers || {}
+          });
         } else {
           console.log('Running in development mode without Electron');
           setConfig({
@@ -87,7 +98,7 @@ const MCPConfigEditor = () => {
 
     loadInitialState();
 
-    // Set up menu action listeners with stable references
+    // Set up menu save handler
     if (window.ipcRenderer) {
       const saveHandler = () => menuHandlersRef.current.save();
       window.ipcRenderer.on('menu-save-config', saveHandler);
@@ -97,7 +108,7 @@ const MCPConfigEditor = () => {
         window.ipcRenderer.off('menu-save-config', saveHandler);
       };
     }
-  }, []); // No dependencies needed as we use ref for handlers
+  }, []); // No dependencies needed
 
   const storeBackup = () => {
     const backup = JSON.parse(JSON.stringify(config));
@@ -151,7 +162,7 @@ const MCPConfigEditor = () => {
       ...prev,
       mcpServers: {
         ...prev.mcpServers,
-        ...importedConfig.mcpServers
+        ...(importedConfig?.mcpServers || {})
       }
     }));
     setShowJsonInput(false);
@@ -212,11 +223,15 @@ const MCPConfigEditor = () => {
                     if (window.ipcRenderer) {
                       const newPath = await window.ipcRenderer.invoke('select-config-file');
                       if (newPath) {
-                        const newConfig = await window.ipcRenderer.invoke('get-config');
-                        setConfigPath(newPath);
-                        setConfig(newConfig);
-                        setLastWorkingConfig(null);
-                        setShowUndoAlert(false);
+                        const newConfig = await window.ipcRenderer.invoke('load-config-from-path', newPath);
+                        if (newConfig) {
+                          setConfigPath(newPath);
+                          setConfig({
+                            mcpServers: newConfig?.mcpServers || {}
+                          });
+                          setLastWorkingConfig(null);
+                          setShowUndoAlert(false);
+                        }
                       }
                     }
                   }}

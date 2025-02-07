@@ -161,6 +161,7 @@ function setupIPC() {
     }
   });
 
+  // Handle selecting a new config file
   ipcMain.handle('select-config-file', async () => {
     if (!mainWindow) return null;
 
@@ -177,6 +178,13 @@ function setupIPC() {
       return newPath;
     }
     return null;
+  });
+
+  // Handle loading config from a specific path
+  ipcMain.handle('load-config-from-path', async (_, path: string) => {
+    currentConfigPath = path;
+    await saveLastConfigPath(path);
+    return await readConfig(path);
   });
 }
 
@@ -232,9 +240,17 @@ function createApplicationMenu() {
 
             if (!openResult.canceled && openResult.filePaths.length > 0) {
               const newPath = openResult.filePaths[0];
+              const newConfig = await readConfig(newPath);
               currentConfigPath = newPath;
               await saveLastConfigPath(newPath);
-              mainWindow?.webContents.send('config-path-changed', newPath);
+              mainWindow.webContents.executeJavaScript(`
+                window._mcpConfigEditor.setConfigPath('${newPath}');
+                window._mcpConfigEditor.setConfig({
+                  mcpServers: ${JSON.stringify(newConfig?.mcpServers || {})}
+                });
+                window._mcpConfigEditor.setLastWorkingConfig(null);
+                window._mcpConfigEditor.setShowUndoAlert(false);
+              `);
             }
           }
         },
