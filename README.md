@@ -13,7 +13,7 @@ Other fancier MCP server management tools are already out there.  However many M
 
 Toolbase is another good option: [https://github.com/Toolbase-AI/toolbase](https://github.com/Toolbase-AI/toolbase)
 
-The main difference between this and Toolbase is that this app is more of a general MCP configuration file manager, while Toolbase is focused on streamlining setup for a curated list of popular servers.  If this app still looks a little too complicated, you should try Toolbase first!
+The main difference between this and Toolbase is that this app is more of a general MCP configuration file manager, while Toolbase is focused on streamlining setup for a curated list of popular servers.  If this app still looks too complicated, you should try Toolbase first!
 
 Hopefully Claude Desktop will just add something like this to the app soon to make MCP setup a little more accessible.
 
