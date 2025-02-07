@@ -125,22 +125,15 @@ const ServerCard: React.FC<ServerCardProps> = ({
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium text-gray-900">{serverName}</h3>
             <div className="flex items-center">
-              <Button
-                variant="ghost"
-                onClick={() => onRemove(serverName)}
-                className="h-10 px-2 text-gray-500 hover:text-red-600"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div 
-                    role="button"
-                    tabIndex={0}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ml-1"
+                  <Button
+                    variant="ghost"
+                    onClick={() => onRemove(serverName)}
+                    className="h-10 px-2 text-gray-500 hover:text-red-600"
                   >
-                    <span className="text-gray-400">?</span>
-                  </div>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent>Remove this server configuration</TooltipContent>
               </Tooltip>
@@ -149,51 +142,35 @@ const ServerCard: React.FC<ServerCardProps> = ({
 
           <div className="space-y-4">
             <div className="flex gap-2 items-center">
-              <Input
-                placeholder="Command (e.g., node, python, java)"
-                value={serverConfig.command}
-                onChange={(e) => handleCommandChange(e.target.value)}
-                className="font-mono h-10"
-              />
-              <div className="flex-shrink-0">
-                <Tooltip>
-                  <TooltipTrigger>
-                    <div 
-                      role="button"
-                      tabIndex={0}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    >
-                      <span className="text-gray-400">?</span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>The command to run the MCP server (e.g., node, python, npx)</TooltipContent>
-                </Tooltip>
-              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Input
+                    placeholder="Command (e.g., node, python, java)"
+                    value={serverConfig.command}
+                    onChange={(e) => handleCommandChange(e.target.value)}
+                    className="font-mono h-10"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>The command to run the MCP server (e.g., node, python, npx)</TooltipContent>
+              </Tooltip>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowArgs(!showArgs)}
-                  className="flex-1 justify-between h-10 font-normal"
-                >
-                  <span>Arguments ({serverConfig.args.length})</span>
-                  {showArgs ? (
-                    <ChevronUp className="w-4 h-4 ml-2" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 ml-2" />
-                  )}
-                </Button>
                 <Tooltip>
-                  <TooltipTrigger>
-                    <div 
-                      role="button"
-                      tabIndex={0}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ml-2"
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowArgs(!showArgs)}
+                      className="flex-1 justify-between h-10 font-normal"
                     >
-                      <span className="text-gray-400">?</span>
-                    </div>
+                      <span>Arguments ({serverConfig.args.length})</span>
+                      {showArgs ? (
+                        <ChevronUp className="w-4 h-4 ml-2" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 ml-2" />
+                      )}
+                    </Button>
                   </TooltipTrigger>
                   <TooltipContent>Command line arguments passed to the server</TooltipContent>
                 </Tooltip>
@@ -204,44 +181,28 @@ const ServerCard: React.FC<ServerCardProps> = ({
                   {serverConfig.args.map((arg: string, index: number) => (
                     <div key={index} className="flex gap-2">
                       <div className="flex gap-2 items-center flex-1" style={{ position: 'relative', zIndex: 5 }}>
-                        <Input
-                          value={arg}
-                          onChange={(e) => handleArgChange(index, e.target.value)}
-                          className="font-mono"
-                          placeholder={`Argument ${index + 1}`}
-                        />
-                        <div className="flex-shrink-0">
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <div 
-                                role="button"
-                                tabIndex={0}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                              >
-                                <span className="text-gray-400">?</span>
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent>Command line argument {index + 1}</TooltipContent>
-                          </Tooltip>
-                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Input
+                              value={arg}
+                              onChange={(e) => handleArgChange(index, e.target.value)}
+                              className="font-mono"
+                              placeholder={`Argument ${index + 1}`}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>Command line argument {index + 1}</TooltipContent>
+                        </Tooltip>
                       </div>
                       <div className="flex items-center">
-                        <Button
-                          variant="ghost"
-                          onClick={() => removeArg(index)}
-                          className="h-10 px-2 text-gray-500 hover:text-red-600"
-                        >
-                          <MinusCircle className="w-4 h-4" />
-                        </Button>
                         <Tooltip>
-                          <TooltipTrigger>
-                              <div 
-                                role="button"
-                                tabIndex={0}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ml-1"
-                              >
-                                <span className="text-gray-400">?</span>
-                              </div>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              onClick={() => removeArg(index)}
+                              className="h-10 px-2 text-gray-500 hover:text-red-600"
+                            >
+                              <MinusCircle className="w-4 h-4" />
+                            </Button>
                           </TooltipTrigger>
                           <TooltipContent>Remove this argument</TooltipContent>
                         </Tooltip>
@@ -249,23 +210,16 @@ const ServerCard: React.FC<ServerCardProps> = ({
                     </div>
                   ))}
                   <div className="flex items-center">
-                    <Button
-                      variant="outline"
-                      onClick={addArg}
-                      className="flex-1 h-10 font-normal"
-                    >
-                      <PlusCircle className="w-4 h-4 mr-2" />
-                      Add Argument
-                    </Button>
                     <Tooltip>
-                      <TooltipTrigger>
-                      <div 
-                        role="button"
-                        tabIndex={0}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ml-2"
-                      >
-                        <span className="text-gray-400">?</span>
-                      </div>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          onClick={addArg}
+                          className="flex-1 h-10 font-normal"
+                        >
+                          <PlusCircle className="w-4 h-4 mr-2" />
+                          Add Argument
+                        </Button>
                       </TooltipTrigger>
                       <TooltipContent>Add a new command line argument</TooltipContent>
                     </Tooltip>
@@ -276,27 +230,20 @@ const ServerCard: React.FC<ServerCardProps> = ({
 
             <div className="space-y-2">
               <div className="flex items-center">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowEnv(!showEnv)}
-                  className="flex-1 justify-between h-10 font-normal"
-                >
-                  <span>Environment Variables ({envVars.length})</span>
-                  {showEnv ? (
-                    <ChevronUp className="w-4 h-4 ml-2" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 ml-2" />
-                  )}
-                </Button>
                 <Tooltip>
-                  <TooltipTrigger>
-                    <div 
-                      role="button"
-                      tabIndex={0}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ml-2"
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowEnv(!showEnv)}
+                      className="flex-1 justify-between h-10 font-normal"
                     >
-                      <span className="text-gray-400">?</span>
-                    </div>
+                      <span>Environment Variables ({envVars.length})</span>
+                      {showEnv ? (
+                        <ChevronUp className="w-4 h-4 ml-2" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 ml-2" />
+                      )}
+                    </Button>
                   </TooltipTrigger>
                   <TooltipContent>Environment variables passed to the server process</TooltipContent>
                 </Tooltip>
@@ -307,74 +254,49 @@ const ServerCard: React.FC<ServerCardProps> = ({
                   {envVars.map((env, index) => (
                     <div key={index} className="flex gap-2">
                       <div className="flex gap-2 items-center w-1/3" style={{ position: 'relative', zIndex: 10 }}>
-                        <Input
-                          value={env.key}
-                          onChange={(e) => {
-                            e.persist();
-                            handleEnvChange(index, e.target.value, env.value);
-                          }}
-                          onKeyDown={(e) => e.stopPropagation()}
-                          className="font-mono"
-                          placeholder="KEY"
-                          aria-label="Environment variable key"
-                          tabIndex={0}
-                          autoComplete="off"
-                        />
-                        <div className="flex-shrink-0">
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <div 
-                                role="button"
-                                tabIndex={0}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                              >
-                                <span className="text-gray-400">?</span>
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent>Environment variable name (e.g., API_KEY)</TooltipContent>
-                          </Tooltip>
-                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Input
+                              value={env.key}
+                              onChange={(e) => {
+                                e.persist();
+                                handleEnvChange(index, e.target.value, env.value);
+                              }}
+                              onKeyDown={(e) => e.stopPropagation()}
+                              className="font-mono"
+                              placeholder="KEY"
+                              aria-label="Environment variable key"
+                              tabIndex={0}
+                              autoComplete="off"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>Environment variable name (e.g., API_KEY)</TooltipContent>
+                        </Tooltip>
                       </div>
                       <div className="flex gap-2 items-center flex-1">
-                        <Input
-                          value={env.value}
-                          onChange={(e) => handleEnvChange(index, env.key, e.target.value)}
-                          className="font-mono"
-                          placeholder="value"
-                          type="text"
-                        />
-                        <div className="flex-shrink-0">
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <div 
-                                role="button"
-                                tabIndex={0}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                              >
-                                <span className="text-gray-400">?</span>
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent>Environment variable value</TooltipContent>
-                          </Tooltip>
-                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Input
+                              value={env.value}
+                              onChange={(e) => handleEnvChange(index, env.key, e.target.value)}
+                              className="font-mono"
+                              placeholder="value"
+                              type="text"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>Environment variable value</TooltipContent>
+                        </Tooltip>
                       </div>
                       <div className="flex items-center">
-                        <Button
-                          variant="ghost"
-                          onClick={() => removeEnvVar(index)}
-                          className="h-10 px-2 text-gray-500 hover:text-red-600"
-                        >
-                          <MinusCircle className="w-4 h-4" />
-                        </Button>
                         <Tooltip>
-                          <TooltipTrigger>
-                              <div 
-                                role="button"
-                                tabIndex={0}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ml-1"
-                              >
-                                <span className="text-gray-400">?</span>
-                              </div>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              onClick={() => removeEnvVar(index)}
+                              className="h-10 px-2 text-gray-500 hover:text-red-600"
+                            >
+                              <MinusCircle className="w-4 h-4" />
+                            </Button>
                           </TooltipTrigger>
                           <TooltipContent>Remove this environment variable</TooltipContent>
                         </Tooltip>
@@ -382,23 +304,16 @@ const ServerCard: React.FC<ServerCardProps> = ({
                     </div>
                   ))}
                   <div className="flex items-center">
-                    <Button
-                      variant="outline"
-                      onClick={addEnvVar}
-                      className="flex-1 h-10 font-normal"
-                    >
-                      <PlusCircle className="w-4 h-4 mr-2" />
-                      Add Environment Variable
-                    </Button>
                     <Tooltip>
-                      <TooltipTrigger>
-                          <div 
-                            role="button"
-                            tabIndex={0}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ml-2"
-                          >
-                            <span className="text-gray-400">?</span>
-                          </div>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          onClick={addEnvVar}
+                          className="flex-1 h-10 font-normal"
+                        >
+                          <PlusCircle className="w-4 h-4 mr-2" />
+                          Add Environment Variable
+                        </Button>
                       </TooltipTrigger>
                       <TooltipContent>Add a new environment variable key-value pair</TooltipContent>
                     </Tooltip>
