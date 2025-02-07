@@ -7,11 +7,19 @@ A desktop application for managing Model Context Protocol (a.k.a. MCP) server co
 
 ![MCP Config Editor Screenshot](docs/assets/screenshots/mcp_config_editor_screenshot.PNG)
 
+## What problem does this solve?
+
+Other fancier MCP server management tools are already out there.  However many MCP users are not software developers (or are just impatient like me). So this is just a simple configuration app that doesn't require any cryptic command line stuff (docker, node, python, etc.) to get up and running.
+
+Hopefully Claude Desktop will just add something like this to the app soon to make MCP setup a little more accessible.
+
 ## Features
 
-- Get less angry with JSON!
-- Experiment with more servers!
-- Have more fun with MCP!
+This app lets you:
+- Paste JSON from a server's Readme file and it will be added to your servers
+- Edit specific fields in each configuration
+- Save and export configurations
+- Add server details manually instead of using JSON
 
 ## Installation
 
