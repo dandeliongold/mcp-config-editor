@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Card, CardHeader, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -27,14 +27,6 @@ const MCPConfigEditor = () => {
   const [newServerName, setNewServerName] = useState('');
   const [showJsonInput, setShowJsonInput] = useState(false);
   const [configPath, setConfigPath] = useState<string>('');
-  const [duplicateServersDialog, setDuplicateServersDialog] = useState<{
-    show: boolean;
-    serverNames: string[];
-  }>({
-    show: false,
-    serverNames: []
-  });
-
   const handleSave = useCallback(async () => {
     try {
       if (window.ipcRenderer) {
@@ -113,17 +105,35 @@ const MCPConfigEditor = () => {
     }
   }, []); // No dependencies needed
 
+  // State for tracking duplicate server errors
+  const [duplicateError, setDuplicateError] = useState<{
+    serverNames: string[];
+  } | null>(null);
+
+  // Clear duplicate error when server name changes
+  useEffect(() => {
+    if (duplicateError?.serverNames.length === 1 && duplicateError.serverNames[0] !== newServerName) {
+      setDuplicateError(null);
+    }
+  }, [newServerName]);
+
+  // Check for duplicate server when typing
+  useEffect(() => {
+    if (newServerName && config.mcpServers[newServerName]) {
+      setDuplicateError({
+        serverNames: [newServerName]
+      });
+    }
+  }, [newServerName, config.mcpServers]);
+
   const addNewServer = () => {
     if (!newServerName) return;
     
-    // Check if server name already exists
+    // Check if server name already exists (error will be shown via effect)
     if (config.mcpServers[newServerName]) {
-      setDuplicateServersDialog({
-        show: true,
-        serverNames: [newServerName]
-      });
       return;
     }
+    setDuplicateError(null);
 
     setConfig(prev => ({
       ...prev,
@@ -165,12 +175,12 @@ const MCPConfigEditor = () => {
       .filter(name => config.mcpServers[name]);
 
     if (duplicates.length > 0) {
-      setDuplicateServersDialog({
-        show: true,
+      setDuplicateError({
         serverNames: duplicates
       });
       return;
     }
+    setDuplicateError(null);
 
     setConfig(prev => ({
       ...prev,
@@ -248,35 +258,27 @@ const MCPConfigEditor = () => {
         </CardHeader>
         <CardContent className="pt-6">
           <div className="space-y-6">
-            {/* Duplicate Servers Dialog */}
-            {duplicateServersDialog.show && (
+            {/* Duplicate Servers Error */}
+            {duplicateError && (
               <Alert variant="destructive" className="mb-4">
-                <AlertTitle>Cannot Add Server</AlertTitle>
+                <AlertTitle>Cannot Add Server{duplicateError.serverNames.length > 1 ? 's' : ''}</AlertTitle>
                 <AlertDescription>
-                  {duplicateServersDialog.serverNames.length === 1 ? (
+                  {duplicateError.serverNames.length === 1 ? (
                     <>
-                      A server named "{duplicateServersDialog.serverNames[0]}" already exists. 
+                      A server named "{duplicateError.serverNames[0]}" already exists.
                       Please remove or rename the duplicate server first if you want to replace it.
                     </>
                   ) : (
                     <>
                       The following servers already exist:
                       <ul className="list-disc pl-4 mt-2">
-                        {duplicateServersDialog.serverNames.map(name => (
+                        {duplicateError.serverNames.map(name => (
                           <li key={name}>"{name}"</li>
                         ))}
                       </ul>
                       Please remove or rename any duplicate servers first if you want to replace them.
                     </>
                   )}
-                  <div className="mt-4">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setDuplicateServersDialog({show: false, serverNames: []})}
-                    >
-                      OK
-                    </Button>
-                  </div>
                 </AlertDescription>
               </Alert>
             )}

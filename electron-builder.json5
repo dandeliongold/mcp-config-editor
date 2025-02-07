@@ -18,6 +18,7 @@
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "win": {
+    "icon": "src/assets/mcp_config_editor.ico",
     "target": [
       {
         "target": "nsis",

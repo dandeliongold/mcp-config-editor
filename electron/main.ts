@@ -248,8 +248,6 @@ function createApplicationMenu() {
                 window._mcpConfigEditor.setConfig({
                   mcpServers: ${JSON.stringify(newConfig?.mcpServers || {})}
                 });
-                window._mcpConfigEditor.setLastWorkingConfig(null);
-                window._mcpConfigEditor.setShowUndoAlert(false);
               `);
             }
           }
