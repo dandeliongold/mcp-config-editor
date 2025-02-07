@@ -283,7 +283,7 @@ const MCPConfigEditor = () => {
                   {duplicateServersDialog.serverNames.length === 1 ? (
                     <>
                       A server named "{duplicateServersDialog.serverNames[0]}" already exists. 
-                      Please remove the existing server first if you want to replace it.
+                      Please remove or rename the duplicate server first if you want to replace it.
                     </>
                   ) : (
                     <>
@@ -293,7 +293,7 @@ const MCPConfigEditor = () => {
                           <li key={name}>"{name}"</li>
                         ))}
                       </ul>
-                      Please remove any existing servers first if you want to replace them.
+                      Please remove or rename any duplicate servers first if you want to replace them.
                     </>
                   )}
                   <div className="mt-4">
