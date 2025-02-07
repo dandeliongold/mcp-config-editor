@@ -244,7 +244,7 @@ function createApplicationMenu() {
               currentConfigPath = newPath;
               await saveLastConfigPath(newPath);
               mainWindow.webContents.executeJavaScript(`
-                window._mcpConfigEditor.setConfigPath('${newPath}');
+                window._mcpConfigEditor.setConfigPath(${JSON.stringify(newPath)});
                 window._mcpConfigEditor.setConfig({
                   mcpServers: ${JSON.stringify(newConfig?.mcpServers || {})}
                 });

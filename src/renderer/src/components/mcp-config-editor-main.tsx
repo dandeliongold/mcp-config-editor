@@ -4,6 +4,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Plus, FileJson, FolderOpen, BookOpen, Download } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/ui/tooltip';
+import { Alert, AlertTitle, AlertDescription } from '../components/ui/alert';
 import JsonImport from './mcp-config-json-import';
 import ServerCard from './mcp-config-server-card';
 import SaveControls from './mcp-config-controls';
@@ -28,6 +29,13 @@ const MCPConfigEditor = () => {
   const [lastWorkingConfig, setLastWorkingConfig] = useState<MCPConfig | null>(null);
   const [showUndoAlert, setShowUndoAlert] = useState(false);
   const [configPath, setConfigPath] = useState<string>('');
+  const [duplicateServersDialog, setDuplicateServersDialog] = useState<{
+    show: boolean;
+    serverNames: string[];
+  }>({
+    show: false,
+    serverNames: []
+  });
 
   const handleSave = useCallback(async () => {
     try {
@@ -117,21 +125,30 @@ const MCPConfigEditor = () => {
   };
 
   const addNewServer = () => {
-    if (newServerName && !config.mcpServers[newServerName]) {
-      storeBackup();
-      setConfig(prev => ({
-        ...prev,
-        mcpServers: {
-          ...prev.mcpServers,
-          [newServerName]: {
-            command: '',
-            args: [],
-            env: {}
-          }
-        }
-      }));
-      setNewServerName('');
+    if (!newServerName) return;
+    
+    // Check if server name already exists
+    if (config.mcpServers[newServerName]) {
+      setDuplicateServersDialog({
+        show: true,
+        serverNames: [newServerName]
+      });
+      return;
     }
+
+    storeBackup();
+    setConfig(prev => ({
+      ...prev,
+      mcpServers: {
+        ...prev.mcpServers,
+        [newServerName]: {
+          command: '',
+          args: [],
+          env: {}
+        }
+      }
+    }));
+    setNewServerName('');
   };
 
   const handleServerUpdate = (serverName: string, newServerConfig: ServerConfig) => {
@@ -157,6 +174,18 @@ const MCPConfigEditor = () => {
   };
 
   const handleJsonImport = (importedConfig: MCPConfig) => {
+    // Check for duplicate server names
+    const duplicates = Object.keys(importedConfig?.mcpServers || {})
+      .filter(name => config.mcpServers[name]);
+
+    if (duplicates.length > 0) {
+      setDuplicateServersDialog({
+        show: true,
+        serverNames: duplicates
+      });
+      return;
+    }
+
     storeBackup();
     setConfig(prev => ({
       ...prev,
@@ -246,6 +275,39 @@ const MCPConfigEditor = () => {
         </CardHeader>
         <CardContent className="pt-6">
           <div className="space-y-6">
+            {/* Duplicate Servers Dialog */}
+            {duplicateServersDialog.show && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertTitle>Cannot Add Server</AlertTitle>
+                <AlertDescription>
+                  {duplicateServersDialog.serverNames.length === 1 ? (
+                    <>
+                      A server named "{duplicateServersDialog.serverNames[0]}" already exists. 
+                      Please remove the existing server first if you want to replace it.
+                    </>
+                  ) : (
+                    <>
+                      The following servers already exist:
+                      <ul className="list-disc pl-4 mt-2">
+                        {duplicateServersDialog.serverNames.map(name => (
+                          <li key={name}>"{name}"</li>
+                        ))}
+                      </ul>
+                      Please remove any existing servers first if you want to replace them.
+                    </>
+                  )}
+                  <div className="mt-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setDuplicateServersDialog({show: false, serverNames: []})}
+                    >
+                      OK
+                    </Button>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+
             {/* Add New Server Controls */}
             {configPath && <div className="flex gap-2 items-center">
               <Tooltip>
