@@ -384,7 +384,7 @@ const MCPConfigEditor = () => {
             </div>
 
             {/* Save Controls */}
-            {configPath && config.mcpServers && Object.keys(config.mcpServers).length > 3 && (
+            {configPath && config.mcpServers && Object.keys(config.mcpServers).length > 1 && (
               <SaveControls onSave={handleSave} />
             )}
           </div>
