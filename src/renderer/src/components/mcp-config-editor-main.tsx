@@ -349,6 +349,14 @@ const MCPConfigEditor = () => {
               />
             )}
 
+            {/* Save Controls (Above Server List) */}
+            {configPath && (
+              <SaveControls
+                onSave={handleSave}
+              />
+            )}
+
+
             {/* Server List */}
             <div className="space-y-4">
               {!configPath ? (
@@ -376,10 +384,8 @@ const MCPConfigEditor = () => {
             </div>
 
             {/* Save Controls */}
-            {configPath && (
-              <SaveControls
-                onSave={handleSave}
-              />
+            {configPath && config.mcpServers && Object.keys(config.mcpServers).length > 3 && (
+              <SaveControls onSave={handleSave} />
             )}
           </div>
         </CardContent>
